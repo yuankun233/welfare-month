@@ -3,7 +3,7 @@
 		<!-- 表单 -->
 		<view class="form">
 			<view class="message1 message">
-				您好，<span class="light">谢勇桥</span>护士
+				您好，<span class="light">{{nurseMessage.nurseName}}</span>护士
 			</view>
 			<view class="message2 message">
 				已服务<span class="light">62</span>人
@@ -12,16 +12,17 @@
 				<u-form-item label="助理护士手机号码:" class="uitem" label-width="auto" :border-bottom="false"
 					prop="assistantNurseTel"
 					:label-style="{'font-size':'24rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
-					<u-input v-model="form.assistantNurseTel" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="11" />
+					<u-input v-model="form.assistantNurseTel" class="uinput" placeholder="请输入" :autoHeight="false"
+						maxlength="11" />
 				</u-form-item>
 				<u-form-item label="客户手机号码:" class="uitem" label-width="auto" :border-bottom="false" prop="userTel"
 					:label-style="{'font-size':'24rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
-					<u-input v-model="form.userTel" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="11" />
+					<u-input v-model="form.userTel" class="uinput" placeholder="请输入" :autoHeight="false"
+						maxlength="11" />
 				</u-form-item>
 			</u-form>
 			<!-- 提交按钮 -->
-			<image src="../../static/nursebtn1.png" mode="widthFix" class="submitBtn"
-				@click="submit2"></image>
+			<image src="../../static/nursebtn1.png" mode="widthFix" class="submitBtn" @click="submit2"></image>
 		</view>
 
 	</view>
@@ -31,6 +32,7 @@
 	export default {
 		data() {
 			return {
+				nurseMessage: "",
 				// 表单数据
 				form: {
 					assistantNurseTel: "",
@@ -75,21 +77,68 @@
 				this.$refs.uForm.validate(valid => {
 					if (valid) {
 						console.log('验证通过');
-						uni.navigateTo({
-							url: "../nursePage3/nursePage3"
-						})
+						this.login()
+						// uni.navigateTo({
+						// 	url: "../nursePage3/nursePage3"
+						// })
 					} else {
 						console.log('验证失败');
 					}
 				})
 
 
+			},
+			login(){
+				let data ={
+					assistantPhone:this.form.assistantNurseTel,
+					userPhone:this.form.userTel,
+					nursePhone:this.nurseMessage.nursePhone
+				}
+				console.log(data)
+				uni.request({
+					url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/bindingUser",
+					method: "POST",
+					data,
+					success:(res)=> {
+						console.log(res)
+				// 		if (res.data.message == '失败') {
+				// 			uni.showToast({
+				// 				title: "手机号不存在",
+				// 				duration: 1000
+				// 			})
+				// 			return
+				// 		}
+						if (res.data.message == '成功') {
+							let data = res.data.data.bindingUser
+							console.log(data)
+							let item = JSON.stringify(data)
+							
+							uni.showToast({
+								title: "获取成功",
+								icon: "success",
+								duration: 1000
+							})
+							setTimeout(() => {
+								uni.navigateTo({
+									url: "../nursePage3/nursePage3?item=" + item
+								})
+							}, 1000)
+				
+							return
+						}
+					}
+				})
 			}
 		},
 		//表单验证规则
 		// 必须要在onReady生命周期，因为onLoad生命周期组件可能尚未创建完毕
 		onReady() {
 			this.$refs.uForm.setRules(this.rules);
+		},
+		onLoad(option) {
+			let item = JSON.parse(option.item)
+			this.nurseMessage = item[0]
+			console.log(this.nurseMessage)
 		}
 	}
 </script>

@@ -9,7 +9,7 @@
 						姓名：
 					</view>
 					<view class="rtext">
-						<view class="text">王小蒙</view>
+						<view class="text">{{this.form.userName}}</view>
 					</view>
 				</view>
 				<view class="textItem">
@@ -17,7 +17,7 @@
 						年龄：
 					</view>
 					<view class="rtext">
-						<view class="text">42</view>
+						<view class="text">{{this.form.userAge}}</view>
 					</view>
 				</view>
 			</view>
@@ -28,7 +28,7 @@
 						电话号码：
 					</view>
 					<view class="rtext">
-						<view class="text">13685622602</view>
+						<view class="text">{{this.form.userPhone}}</view>
 					</view>
 				</view>
 				<view class="textItem">
@@ -36,19 +36,19 @@
 						身份证号码：
 					</view>
 					<view class="rtext">
-						<view class="text">32032419950822277X</view>
+						<view class="text">{{this.form.userPhone}}</view>
 					</view>
 				</view>
 				<view class="textItem adress">
 					<view class="ltext">
-						服务时间：
+						服务地址：
 					</view>
 					<view>
 						<view class="rtext">
-							<view class="text">上海市 浦东新区 永泰路</view>
+							<view class="text">{{this.form.adress}}</view>
 						</view>
 						<view class="rtext">
-							<view class="text">欣供花园70号502室</view>
+							<view class="text">{{this.form.adress}}</view>
 						</view>
 					</view>
 
@@ -58,14 +58,13 @@
 						服务时间：
 					</view>
 					<view class="rtext">
-						<view class="text">2021.09.13 9：00 </view>
+						<view class="text">{{this.form.userService}}</view>
 					</view>
 				</view>
 			</view>
 
 			<!-- 提交按钮 -->
-			<image src="../../static/nursebtn2.png" mode="widthFix" class="submitBtn"
-				@click="submit1"></image>
+			<image src="../../static/nursebtn2.png" mode="widthFix" class="submitBtn" @click="submit1"></image>
 		</view>
 
 	</view>
@@ -76,9 +75,7 @@
 		data() {
 			return {
 				// 表单数据
-				form: {
-
-				}
+				form: []
 			}
 		},
 		methods: {
@@ -87,16 +84,23 @@
 					title: "开始服务，稍后跳转至调查表...",
 					icon: "none",
 					duration: 2000,
-					success() {
+					success:()=> {
+						let orderID=this.form.orderID
 						setTimeout(() => {
 							uni.navigateTo({
-								url: "../nursePage4/nursePage4"
+								url: "../nursePage4/nursePage4?id="+orderID
 							})
 						}, 2000)
 
 					}
 				})
 			}
+		},
+		onLoad(option) {
+			console.log(option.item)
+			let form = JSON.parse(option.item)
+			this.form=form[2]
+			console.log(this.form)
 		}
 	}
 </script>

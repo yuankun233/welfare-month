@@ -232,6 +232,8 @@
 	export default {
 		data() {
 			return {
+				orderID:"",
+				form0: '',
 				//出口处评估列表
 				radioList: [{
 						name: '盆浴',
@@ -317,10 +319,11 @@
 								duration: 2000
 							})
 						}, 2000);
+						//审查图片是否赋值
+						console.log(this.form1.serviceDrainPipe, '123456')
 					}
 				})
-				//审查图片是否赋值
-				console.log(this.form1.serviceDrainPipe, '123456')
+
 			},
 			//提交
 			getMes() {
@@ -339,29 +342,54 @@
 				//判断选择否时是否填写原因
 				if (this.form1.serviceCause === '' && this.form.serviceDisinfected === '否') {
 					uni.showToast({
-						title: '有未填选项1',
+						title: '有未填选项',
 						icon: 'none'
 					})
 					return
 				} else if (this.form1.serviceCause1 === '' && this.form.serviceChangeFluid === '否') {
 					uni.showToast({
-						title: '有未填选项2',
+						title: '有未填选项',
 						icon: 'none'
 					})
 					return
 				}
-				//判断是否上传图片
-				if (this.form1.servicePicaddress === '') {
-					uni.showToast({
-						title: '请上传图片',
-						icon: 'none'
-					})
-					return
-				}
+				// //判断是否上传图片
+				// if (this.form1.servicePicaddress === '') {
+				// 	uni.showToast({
+				// 		title: '请上传图片',
+				// 		icon: 'none'
+				// 	})
+				// 	return
+				// }
 				//审查数据是否赋值成功
 				console.log(this.form, 'form表单')
 				console.log(this.form1, 'form表单')
+				// 提交表单
+				uni.request({
+					url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/selectNurse",
+					method: "POST",
+					data: {
+						orderID: this.orderID,
+						...this.form0,
+						...this.form,
+						...this.form1
+					},
+					success: (res) => {
+						console.log(res)
+
+					}
+				})
 			}
+		},
+		onLoad(option) {
+			// decodeURIComponent 解密传过来的对象字符串
+			const item = JSON.parse(decodeURIComponent(option.item));
+			console.log(item)
+			this.form0 = item
+
+			let orderID = uni.getStorageSync("orderID")
+			this.orderID=orderID
+			console.log(orderID)
 		}
 	}
 </script>

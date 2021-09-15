@@ -213,7 +213,8 @@
 					</u-form-item>
 					<u-form-item label="腹透液超过有效期:" class="" label-width="450rpx" label-position="top"
 						:label-style="{'font-size':'34rpx','color': '#808080'}">
-						<u-radio-group v-model="form2.serviceValidity" class="groupitem" v-slot="right" style="margin-left: 125rpx;" width="200">
+						<u-radio-group v-model="form2.serviceValidity" class="groupitem" v-slot="right"
+							style="margin-left: 125rpx;" width="200">
 							<u-radio v-for="(item, index) in radio1" :key="index" :name="item.name" label-size="40"
 								:disabled="item.disabled">
 								{{item.name}}
@@ -222,16 +223,18 @@
 					</u-form-item>
 					<u-form-item label="腹透液储存按日期摆放:" class="" label-width="450rpx" label-position="top"
 						:label-style="{'font-size':'34rpx','color': '#808080'}">
-						<u-radio-group v-model="form2.serviceSort" class="groupitem" v-slot="right" style="margin-left: 125rpx;" width="200">
+						<u-radio-group v-model="form2.serviceSort" class="groupitem" v-slot="right"
+							style="margin-left: 125rpx;" width="200">
 							<u-radio v-for="(item, index) in radio1" :key="index" :name="item.name" label-size="40"
 								:disabled="item.disabled">
 								{{item.name}}
 							</u-radio>
 						</u-radio-group>
 					</u-form-item>
-					<u-form-item label="储存至少14天腹透液:" class="" label-width="450rpx" label-position="top" :border-bottom="false"
-						:label-style="{'font-size':'34rpx','color': '#808080'}">
-						<u-radio-group v-model="form2.serviceInventory" class="groupitem" v-slot="right" style="margin-left: 125rpx;" width="200">
+					<u-form-item label="储存至少14天腹透液:" class="" label-width="450rpx" label-position="top"
+						:border-bottom="false" :label-style="{'font-size':'34rpx','color': '#808080'}">
+						<u-radio-group v-model="form2.serviceInventory" class="groupitem" v-slot="right"
+							style="margin-left: 125rpx;" width="200">
 							<u-radio v-for="(item, index) in radio1" :key="index" :name="item.name" label-size="40"
 								:disabled="item.disabled">
 								{{item.name}}
@@ -254,6 +257,8 @@
 	export default {
 		data() {
 			return {
+				// 订单id
+				orderID: '',
 				//单选1
 				radio1: [{
 						name: "是"
@@ -309,7 +314,7 @@
 				console.log(flag1, flag2)
 				if (flag1 && flag2) {
 					console.log('通过非空验证')
-					
+
 					let form = {
 						...this.form1,
 						...this.form2
@@ -317,7 +322,7 @@
 					let item = encodeURIComponent(JSON.stringify(form))
 					console.log(form)
 					uni.navigateTo({
-						url:"../nursePage1/nursePage1?item="+item		
+						url: "../nursePage5/nursePage5?item=" + item
 					})
 					return
 				}
@@ -325,8 +330,13 @@
 					title: '有未填选项',
 					icon: 'none'
 				})
-				
+
 			}
+		},
+		onLoad(option) {
+			console.log(option.id)
+			this.orderID = option.id
+			uni.setStorageSync("orderID",option.id)
 		}
 	}
 </script>
@@ -342,9 +352,11 @@
 		.u-border-bottom:after {
 			border-bottom: 2rpx solid #d6d6d6
 		}
-		.u-form-item__body{
+
+		.u-form-item__body {
 			flex-wrap: wrap !important;
 		}
+
 		// 临床评估
 		.form1 {
 			position: absolute;
@@ -371,7 +383,7 @@
 		}
 
 		.radioSp1 {
-			
+
 			.groupitem {
 				display: flex;
 				width: 300rpx;
