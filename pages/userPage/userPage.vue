@@ -3,10 +3,10 @@
 		<!-- 表单区域 -->
 		<view class="userform">
 			<!-- 用户表单信息 -->
-			<u-form :model="form" ref="uForm" :border-bottom="false">
-				<u-form-item label="联系电话:" class="uitem" label-width="150rpx" :border-bottom="false"
-					:label-style="{'font-size':'30rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
-					<u-input v-model="form.tel" class="uinput" placeholder="请输入" :autoHeight="false" />
+			<u-form :model="form" ref="uForm" :border-bottom="false" :error-type="errorType">
+				<u-form-item label="联系电话:" class="uitem" label-width="150rpx" :border-bottom="false" prop="tel"
+					:label-style="{'font-size':'30rpx','color': '#808080'}">
+					<u-input v-model="form.tel" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="11" />
 				</u-form-item>
 
 				<!-- <u-form-item label="来源医院:" class="uitem" label-width="150rpx" style="padding-right: 20rpx;"
@@ -14,6 +14,7 @@
 					<u-input v-model="form.hospital" type="select" @click="show = true" placeholder="请选择" />
 				</u-form-item> -->
 				<u-form-item label="是否本人:" class="uitem" label-width="150rpx" style="padding-right: 20rpx;"
+					prop="isSelf"
 					:label-style="{'font-size':'30rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
 					<u-radio-group v-model="form.isSelf" @change="radioGroupChange">
 						<u-radio @change="radioChange" v-for="(item, index) in list" :key="index" :name="item.name"
@@ -40,13 +41,13 @@
 				</u-form-item>
 			</u-form>
 			<!-- 预约按钮 -->
-			<image src="https://www.xiaohulaile.com/wxcx/benimg/userbtn.png" mode="widthFix" class="bookBtn"
+			<image src="../../static/userbtn.png" mode="widthFix" class="bookBtn"
 				@click="bookServe"></image>
 		</view>
 		<!-- 预约二维码 -->
 		<image :src="image" mode="widthFix" @click="preview(image)" class="qrCode"></image>
 		<!-- 医院选择下拉框 -->
-		<u-action-sheet :list="hospitalList" v-model="show" @click="actionSheetCallback"></u-action-sheet>
+		<!-- <u-action-sheet :list="hospitalList" v-model="show" @click="actionSheetCallback"></u-action-sheet> -->
 	</view>
 </template>
 
@@ -67,31 +68,43 @@
 				// 用户表单相关数据
 				form: {
 					tel: "",
-					hospital: "",
 					isSelf: "",
 					date: '请选择'
 				},
-				image: "https://www.xiaohulaile.com/wxcx/benimg/userQr.png", // 二维码
-				// 来源医院选择框
-				show: false,
-				hospitalList: [{
-						text: '龙华医院'
-					},
-					{
-						text: '小护医院'
-					},
-					{
-						text: '上海人民医院'
-					}
-				],
+				image: "../../static/userQr.png", // 二维码
+				// 是否本人单选
 				list: [{
 						name: "是"
 					},
 					{
 						name: "否"
 					}
-				]
-
+				],
+				// 表单校验规则
+				rules: {
+					// 字段名称
+					tel: [{
+							required: true,
+							message: '请输入联系电话',
+						},
+						{
+							pattern: /^((13[0-9])|(14[0-9])|(15[0-9])|(17[0-9])|(18[0-9]))\d{8}$/,
+							// 正则检验前先将值转为字符串
+							transform(value) {
+								return String(value);
+							},
+							message: '联系电话格式错误',
+							trigger: ['change', 'blur']
+						}
+					],
+					isSelf: [{
+						required: true,
+						message: '请选择是否为本人',
+						trigger: ['change', 'blur']
+					}]
+				},
+				// 表单验证错误提示类型
+				errorType: ['toast']
 			}
 		},
 		methods: {
@@ -106,26 +119,59 @@
 			},
 			// 预约服务
 			bookServe() {
+				this.$refs.uForm.validate(valid => {
+					if (valid) {
+
+						if (this.form.date == "请选择") {
+							uni.showToast({
+								title: '请选择服务日期',
+								icon: 'none'
+							})
+							return
+						}
+						console.log('验证通过');
+						// 发送请求
+						this.bookServeRequest()
+					} else {
+						console.log('验证失败');
+					}
+				})
+
+
+			},
+			// 发送预约服务请求
+			bookServeRequest() {
 				let data = {
 					userPhone: this.form.tel,
-					userService: this.form.date,
-					oneself: this.form.isSelf
+					oneself: this.form.isSelf,
+					userService: this.form.date
 				}
 				console.log(data)
 				uni.request({
 					url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/insertUsers",
+					method: "POST",
 					data,
-					method:"POST",
 					success(res) {
 						console.log(res)
+						// 预约成功
+						if (res.data.data.usersLogin) {
+							uni.showToast({
+								title: "预约成功！",
+								icon: "success",
+								duration: 2000
+							})
+							return
+						}
+
+					},
+					fail() {
 						uni.showToast({
-							title: "预约成功！",
-							icon: "success",
-							duration: 1000
+							title: "预约失败！请稍后再试",
+							icon:"none",
+							duration: 2000
 						})
 					}
 				})
-
 			},
 			// 下拉选择框
 			actionSheetCallback(index) {
@@ -143,7 +189,7 @@
 			// 日期级联选择器相关方法
 			bindDateChange: function(e) {
 				this.form.date = e.target.value
-				console.log('失能时间', this.form.date)
+				console.log('服务时间', this.form.date)
 			},
 			getDate(type) {
 				const date = new Date();
@@ -162,6 +208,11 @@
 			}
 
 
+		},
+		//表单验证规则
+		// 必须要在onReady生命周期，因为onLoad生命周期组件可能尚未创建完毕
+		onReady() {
+			this.$refs.uForm.setRules(this.rules);
 		}
 	}
 </script>
@@ -171,7 +222,7 @@
 		position: relative;
 		width: 750rpx;
 		height: 5294rpx;
-		background: url(https://www.xiaohulaile.com/wxcx/benimg/banner1.jpg) no-repeat;
+		background: url(../../static/banner1.jpg) no-repeat;
 		background-size: 100%;
 
 		// 用户表单

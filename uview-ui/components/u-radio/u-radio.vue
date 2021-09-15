@@ -260,7 +260,8 @@
 			word-wrap: break-word;
 			margin-left: 10rpx;
 			margin-right: 24rpx;
-			color: $u-content-color;
+			//设计稿颜色
+			color: #333333;
 			font-size: 30rpx;
 			
 			&--disabled {

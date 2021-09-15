@@ -58,13 +58,14 @@
 						服务时间：
 					</view>
 					<view class="rtext">
-						<view class="text">2021.09.13    9：00 </view>
+						<view class="text">2021.09.13 9：00 </view>
 					</view>
 				</view>
 			</view>
 
 			<!-- 提交按钮 -->
-			<image src="https://www.xiaohulaile.com/wxcx/benimg/nursebtn2.png" mode="widthFix" class="submitBtn" @click="submit1"></image>
+			<image src="../../static/nursebtn2.png" mode="widthFix" class="submitBtn"
+				@click="submit1"></image>
 		</view>
 
 	</view>
@@ -83,9 +84,17 @@
 		methods: {
 			submit1() {
 				uni.showToast({
-					title: "预约成功！",
-					icon: "success",
-					duration: 1000
+					title: "开始服务，稍后跳转至调查表...",
+					icon: "none",
+					duration: 2000,
+					success() {
+						setTimeout(() => {
+							uni.navigateTo({
+								url: "../nursePage4/nursePage4"
+							})
+						}, 2000)
+
+					}
 				})
 			}
 		}
@@ -95,7 +104,7 @@
 <style lang="less" scoped>
 	.container {
 		position: relative;
-		background: url(https://www.xiaohulaile.com/wxcx/benimg/banner4.png) no-repeat;
+		background: url(../../static/banner4.png) no-repeat;
 		background-size: 100%;
 		width: 750rpx;
 		height: 1668rpx;
@@ -104,7 +113,7 @@
 		.form {
 			width: 653rpx;
 			height: 944rpx;
-			background: url(https://www.xiaohulaile.com/wxcx/benimg/banner4-1.png) no-repeat;
+			background: url(../../static/banner4-1.png) no-repeat;
 			background-size: 100%;
 			position: absolute;
 			bottom: 135rpx;

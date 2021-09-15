@@ -14,7 +14,7 @@
 
 <style lang="scss">
 	@import "uview-ui/index.scss";
-
+	
 	* {
 		margin: 0;
 		padding: 0;
@@ -29,4 +29,7 @@
 	// 	padding: unset;
 	// 	padding-left: 22rpx;
 	// }
+	body{
+		background-color: #009aff;
+	}
 </style>

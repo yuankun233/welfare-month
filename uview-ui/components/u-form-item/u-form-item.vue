@@ -364,6 +364,7 @@
 
 		&__body {
 			@include vue-flex;
+			//溢出换行
 		}
 
 		&--left {

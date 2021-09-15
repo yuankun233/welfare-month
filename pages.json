@@ -8,7 +8,15 @@
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 
+		{
+			"path": "pages/userPage/userPage",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
 
+		},
 		{
 			"path": "pages/nursePage1/nursePage1",
 			"style": {
@@ -35,7 +43,7 @@
 
 		},
 		{
-			"path": "pages/userPage/userPage",
+			"path": "pages/nursePage4/nursePage4",
 			"style": {
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false,
@@ -43,7 +51,17 @@
 			}
 
 		}
-	],
+	    ,{
+            "path" : "pages/nursePage5/nursePage5",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+            }
+            
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
