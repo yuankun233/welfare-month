@@ -45,10 +45,10 @@
 					</view>
 					<view>
 						<view class="rtext">
-							<view class="text">{{this.form.adress}}</view>
+							<view class="text">{{this.form.userRegion}}</view>
 						</view>
 						<view class="rtext">
-							<view class="text">{{this.form.adress}}</view>
+							<view class="text">{{this.form.userAddress}}</view>
 						</view>
 					</view>
 

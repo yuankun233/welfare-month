@@ -320,6 +320,7 @@
 						...this.form2
 					}
 					let item = encodeURIComponent(JSON.stringify(form))
+					
 					console.log(form)
 					uni.navigateTo({
 						url: "../nursePage5/nursePage5?item=" + item

@@ -61,6 +61,16 @@
             }
             
         }
+        ,{
+            "path" : "pages/userPage0/userPage0",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

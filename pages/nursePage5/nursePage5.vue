@@ -232,7 +232,7 @@
 	export default {
 		data() {
 			return {
-				orderID:"",
+				orderID: "",
 				form0: '',
 				//出口处评估列表
 				radioList: [{
@@ -364,18 +364,25 @@
 				//审查数据是否赋值成功
 				console.log(this.form, 'form表单')
 				console.log(this.form1, 'form表单')
+				let data = {
+					orderID: this.orderID,
+					...this.form0,
+					...this.form,
+					...this.form1
+				}
+				console.log('ajax发送数据', data)
 				// 提交表单
 				uni.request({
-					url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/selectNurse",
+					url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/insertInfo",
 					method: "POST",
-					data: {
-						orderID: this.orderID,
-						...this.form0,
-						...this.form,
-						...this.form1
-					},
+					data,
 					success: (res) => {
 						console.log(res)
+						if (res.data.data.serviceInfo == true) {
+							uni.showToast({
+								title: "提交成功"
+							})
+						}
 
 					}
 				})
@@ -388,7 +395,7 @@
 			this.form0 = item
 
 			let orderID = uni.getStorageSync("orderID")
-			this.orderID=orderID
+			this.orderID = orderID
 			console.log(orderID)
 		}
 	}

@@ -6,7 +6,7 @@
 				您好，<span class="light">{{nurseMessage.nurseName}}</span>护士
 			</view>
 			<view class="message2 message">
-				已服务<span class="light">62</span>人
+				已服务<span class="light">{{nurseMessage.nurseTime}}</span>人
 			</view>
 			<u-form :model="form" ref="uForm" :errorType="['toast']">
 				<u-form-item label="助理护士手机号码:" class="uitem" label-width="auto" :border-bottom="false"

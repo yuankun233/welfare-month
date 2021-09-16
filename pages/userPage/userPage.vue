@@ -41,8 +41,7 @@
 				</u-form-item>
 			</u-form>
 			<!-- 预约按钮 -->
-			<image src="../../static/userbtn.png" mode="widthFix" class="bookBtn"
-				@click="bookServe"></image>
+			<image src="../../static/userbtn.png" mode="widthFix" class="bookBtn" @click="bookServe"></image>
 		</view>
 		<!-- 预约二维码 -->
 		<image :src="image" mode="widthFix" @click="preview(image)" class="qrCode"></image>
@@ -167,7 +166,7 @@
 					fail() {
 						uni.showToast({
 							title: "预约失败！请稍后再试",
-							icon:"none",
+							icon: "none",
 							duration: 2000
 						})
 					}
@@ -221,8 +220,8 @@
 	.container {
 		position: relative;
 		width: 750rpx;
-		height: 5294rpx;
-		background: url(../../static/banner1.jpg) no-repeat;
+		height: 3647rpx;
+		background: url(../../static/banner1.png) no-repeat;
 		background-size: 100%;
 
 		// 用户表单
@@ -232,7 +231,7 @@
 			background: #FFFFFF;
 			border-radius: 30rpx;
 			position: absolute;
-			bottom: 503rpx;
+			bottom: 549rpx;
 			left: 50%;
 			transform: translateX(-50%);
 			// 输入框
@@ -277,7 +276,7 @@
 		.qrCode {
 			position: absolute;
 			left: 85rpx;
-			bottom: 134rpx;
+			bottom: 180rpx;
 			width: 158rpx;
 			height: 160rpx;
 		}
