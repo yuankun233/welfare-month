@@ -51,19 +51,22 @@
 				this.$refs.uForm.validate(valid => {
 					if (valid) {
 						console.log('验证通过');
-
+						uni.showLoading({
+							title:"登陆中..."
+						})
 						uni.request({
 							url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/selectNurse",
 							method: "POST",
 							data: {
 								nursePhone: this.form.nurseTel
 							},
-							success:(res)=> {
+							success: (res) => {
 								console.log(res)
 								if (res.data.message == '失败') {
 									uni.showToast({
 										title: "手机号不存在",
-										duration: 1000
+										duration: 1000,
+										icon: "none"
 									})
 									return
 								}
@@ -78,12 +81,23 @@
 									})
 									setTimeout(() => {
 										uni.navigateTo({
-											url: "../nursePage2/nursePage2?item=" + item
+											url: "../nursePage2/nursePage2?item=" +
+												item
 										})
 									}, 1000)
 
 									return
 								}
+							},
+							fail() {
+								uni.showToast({
+									title: "登录失败，请稍后再试",
+									icon: "success",
+									duration: 1000
+								})
+							},
+							complete() {
+								uni.hideLoading()
 							}
 						})
 						// uni.navigateTo({

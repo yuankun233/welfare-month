@@ -9,17 +9,19 @@
 				已服务<span class="light">{{nurseMessage.nurseTime}}</span>人
 			</view>
 			<u-form :model="form" ref="uForm" :errorType="['toast']">
+				<u-form-item label="客户手机号码:" class="uitem" label-width="auto" :border-bottom="false" prop="userTel"
+					:required="true"
+					:label-style="{'font-size':'24rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
+					<u-input v-model="form.userTel" class="uinput" placeholder="请输入" :autoHeight="false"
+						maxlength="11" />
+				</u-form-item>
 				<u-form-item label="助理护士手机号码:" class="uitem" label-width="auto" :border-bottom="false"
 					prop="assistantNurseTel"
 					:label-style="{'font-size':'24rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
 					<u-input v-model="form.assistantNurseTel" class="uinput" placeholder="请输入" :autoHeight="false"
 						maxlength="11" />
 				</u-form-item>
-				<u-form-item label="客户手机号码:" class="uitem" label-width="auto" :border-bottom="false" prop="userTel"
-					:label-style="{'font-size':'24rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
-					<u-input v-model="form.userTel" class="uinput" placeholder="请输入" :autoHeight="false"
-						maxlength="11" />
-				</u-form-item>
+
 			</u-form>
 			<!-- 提交按钮 -->
 			<image src="../../static/nursebtn1.png" mode="widthFix" class="submitBtn" @click="submit2"></image>
@@ -42,19 +44,14 @@
 				rules: {
 					// 字段名称
 					assistantNurseTel: [{
-							required: true,
-							message: '请输入助理护士手机号码'
+						pattern: /^((13[0-9])|(14[0-9])|(15[0-9])|(17[0-9])|(18[0-9]))\d{8}$/,
+						// 正则检验前先将值转为字符串
+						transform(value) {
+							return String(value);
 						},
-						{
-							pattern: /^((13[0-9])|(14[0-9])|(15[0-9])|(17[0-9])|(18[0-9]))\d{8}$/,
-							// 正则检验前先将值转为字符串
-							transform(value) {
-								return String(value);
-							},
-							message: '助理护士手机号码格式错误',
-							trigger: ['change', 'blur']
-						}
-					],
+						message: '助理护士手机号码格式错误',
+						trigger: ['change', 'blur']
+					}],
 					userTel: [{
 							required: true,
 							message: '请输入客户手机号码'
@@ -88,31 +85,27 @@
 
 
 			},
-			login(){
-				let data ={
-					assistantPhone:this.form.assistantNurseTel,
-					userPhone:this.form.userTel,
-					nursePhone:this.nurseMessage.nursePhone
+			login() {
+				uni.showLoading({
+					title: "加载中..."
+				})
+				let data = {
+					assistantPhone: this.form.assistantNurseTel,
+					userPhone: this.form.userTel,
+					nursePhone: this.nurseMessage.nursePhone
 				}
 				console.log(data)
 				uni.request({
 					url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/bindingUser",
 					method: "POST",
 					data,
-					success:(res)=> {
+					success: (res) => {
 						console.log(res)
-				// 		if (res.data.message == '失败') {
-				// 			uni.showToast({
-				// 				title: "手机号不存在",
-				// 				duration: 1000
-				// 			})
-				// 			return
-				// 		}
 						if (res.data.message == '成功') {
 							let data = res.data.data.bindingUser
 							console.log(data)
 							let item = JSON.stringify(data)
-							
+
 							uni.showToast({
 								title: "获取成功",
 								icon: "success",
@@ -123,9 +116,28 @@
 									url: "../nursePage3/nursePage3?item=" + item
 								})
 							}, 1000)
-				
+
 							return
 						}
+						if (res.data.message == '失败') {
+
+							uni.showToast({
+								title: "手机号不存在",
+								icon: "none",
+								duration: 1000
+							})
+							return
+						}
+					},
+					fail() {
+						uni.showToast({
+							title: "加载失败！请稍后再试",
+							icon: "none",
+							duration: 1000
+						})
+					},
+					complete() {
+						uni.hideLoading()
 					}
 				})
 			}

@@ -140,6 +140,9 @@
 			},
 			// 发送预约服务请求
 			bookServeRequest() {
+				uni.showLoading({
+					title:"预约中..."
+				})
 				let data = {
 					userPhone: this.form.tel,
 					oneself: this.form.isSelf,
@@ -161,6 +164,16 @@
 							})
 							return
 						}
+						// 不能重复预约
+
+						if (res.data.data.usersLogin==false) {
+							uni.showToast({
+								title: "不能重复预约！",
+								icon: "none",
+								duration: 2000
+							})
+							return
+						}
 
 					},
 					fail() {
@@ -169,6 +182,9 @@
 							icon: "none",
 							duration: 2000
 						})
+					},
+					complete() {
+						uni.hideLoading()
 					}
 				})
 			},

@@ -223,7 +223,7 @@
 			<!-- 提交和上传图片按钮 -->
 
 			<image class="upImg" @click="chooseImage" src="../../static/upPhoto.png" mode="" :lazy-load="true"></image>
-			<image class="getMes" @click="getMes" src="../../static/nursebtn1.png" mode="" :lazy-load="true"></image>
+			<image class="getMes" @click="getMes" src="../../static/nursebtn3.png" mode="" :lazy-load="true"></image>
 		</view>
 	</view>
 </template>
@@ -291,23 +291,27 @@
 					serviceCause: '', //原因
 					serviceCause1: '', //原因1
 					servicePicaddress: '' //	图片地址
-				}
+				},
+				pictures: []
 			}
 		},
 		methods: {
 			//动态上传图片
 			chooseImage() {
 				uni.chooseImage({
-					count: 1,
+					count: 5,
 					success: res => {
 						//上传时提示上传中吐司
 						uni.showLoading({
 							title: '上传图片中',
 						})
+
+
+
 						//赋值图片链接到声明变量
-						this.form1.servicePicaddress = res.tempFilePaths[0];
+						this.pictures = res.tempFilePaths;
 						//判断是否赋值成功关闭上传中吐司
-						if (this.form1.servicePicaddress === res.tempFilePaths[0]) {
+						if (this.pictures == res.tempFilePaths) {
 							setTimeout(function() {
 								uni.hideLoading();
 							}, 2000);
@@ -320,7 +324,23 @@
 							})
 						}, 2000);
 						//审查图片是否赋值
-						console.log(this.form1.serviceDrainPipe, '123456')
+						console.log('pictures',this.pictures)
+						// console.log(res);
+						// let filePath=res.tempFilePaths
+						// // callback方式，与promise方式二选一即可
+						// uniCloud.uploadFile({
+						// 	filePath: filePath,
+						// 	cloudPath: 'a.jpg',
+						// 	onUploadProgress: function(progressEvent) {
+						// 		console.log(progressEvent);
+						// 		var percentCompleted = Math.round(
+						// 			(progressEvent.loaded * 100) / progressEvent.total
+						// 		);
+						// 	},
+						// 	success() {},
+						// 	fail() {},
+						// 	complete() {}
+						// });
 					}
 				})
 
@@ -361,6 +381,9 @@
 				// 	})
 				// 	return
 				// }
+				uni.showLoading({
+					title: "提交中..."
+				})
 				//审查数据是否赋值成功
 				console.log(this.form, 'form表单')
 				console.log(this.form1, 'form表单')
@@ -380,10 +403,23 @@
 						console.log(res)
 						if (res.data.data.serviceInfo == true) {
 							uni.showToast({
-								title: "提交成功"
+								title: "提交成功！",
+								duration: 1000
 							})
+							return
+						}
+						if (res.data.data.serviceInfo == false) {
+							uni.showToast({
+								title: "请勿重复提交！",
+								duration: 1000,
+								icon:"none"
+							})
+							return
 						}
 
+					},
+					complete() {
+						uni.hideLoading()
 					}
 				})
 			}

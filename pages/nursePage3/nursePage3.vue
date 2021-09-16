@@ -36,7 +36,7 @@
 						身份证号码：
 					</view>
 					<view class="rtext">
-						<view class="text">{{this.form.userPhone}}</view>
+						<view class="text">{{this.form.userIDcard}}</view>
 					</view>
 				</view>
 				<view class="textItem adress">
@@ -80,26 +80,25 @@
 		},
 		methods: {
 			submit1() {
-				uni.showToast({
-					title: "开始服务，稍后跳转至调查表...",
-					icon: "none",
-					duration: 2000,
+				uni.showLoading({
+					title: "加载中...",
+					duration: 1000,
 					success:()=> {
-						let orderID=this.form.orderID
+						let orderID = this.form.orderID
 						setTimeout(() => {
 							uni.navigateTo({
-								url: "../nursePage4/nursePage4?id="+orderID
+								url: "../nursePage4/nursePage4?id=" + orderID
 							})
-						}, 2000)
-
+						}, 1000)
 					}
 				})
+
 			}
 		},
 		onLoad(option) {
 			console.log(option.item)
 			let form = JSON.parse(option.item)
-			this.form=form[2]
+			this.form = form[2]
 			console.log(this.form)
 		}
 	}
