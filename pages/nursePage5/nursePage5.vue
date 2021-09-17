@@ -223,8 +223,7 @@
 				请上传服务评价表：
 			</view>
 			<!-- 提交和上传图片按钮 -->
-			<u-upload ref="uUpload" :action="action" :auto-upload="false" :file-list="fileList" max-count="5"
-				@on-choose-complete="uppic" class="uploadImg" width="177rpx" height="177rpx"></u-upload>
+			<u-upload ref="uUpload" :action="action" :auto-upload="false" max-count="5"  max-size="3145728" name="image" width="177rpx" height="177rpx"></u-upload>
 			<!-- <u-button @click="submitImg">提交</u-button> -->
 
 			<image class="getMes" @click="getMes" src="../../static/nursebtn3.png" mode="" :lazy-load="true"></image>
@@ -339,8 +338,11 @@
 			// 上传图片至服务器
 			submitImg() {
 				console.log('正在上传图片至服务器')
-				this.$refs.uUpload.upload();
-
+                let files = []
+                files =this.$refs.uUpload.lists.filter(val=>{
+                    return val.progress ==100
+                })
+                console.log(files)
 			},
 			//提交
 			getMes() {
