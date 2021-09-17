@@ -6,7 +6,7 @@
 				您好，<span class="light">{{nurseMessage.nurseName}}</span>护士
 			</view>
 			<view class="message2 message">
-				已服务<span class="light">{{nurseMessage.nurseTime}}</span>人
+				已服务<span class="light" style="vertical-align: bottom;">{{nurseMessage.nurseTime}}</span>人
 			</view>
 			<u-form :model="form" ref="uForm" :errorType="['toast']">
 				<u-form-item label="客户手机号码:" class="uitem" label-width="auto" :border-bottom="false" prop="userTel"
@@ -173,6 +173,7 @@
 			line-height: auto;
 
 			.light {
+
 				color: #0177fe;
 				font-size: 52rpx;
 				margin-right: 25rpx;

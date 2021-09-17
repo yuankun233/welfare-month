@@ -159,7 +159,7 @@
 
 		<!-- 第三个表单 -->
 
-		<view class="demoOne" style="top: 3000rpx; height: 2600rpx;">
+		<view class="demoOne" style="top: 3000rpx; height: 3000rpx;">
 			<view class="demoBox">
 				<image src="../../static/imgTwo.png" mode="" :lazy-load="true"></image>
 				<u-form :model="form" ref="uForm">
@@ -219,10 +219,14 @@
 
 				</u-form>
 			</view>
-
+			<view class="uploadtit">
+				请上传服务评价表：
+			</view>
 			<!-- 提交和上传图片按钮 -->
+			<u-upload ref="uUpload" :action="action" :auto-upload="false" :file-list="fileList" max-count="5"
+				@on-choose-complete="uppic" class="uploadImg" width="177rpx" height="177rpx"></u-upload>
+			<!-- <u-button @click="submitImg">提交</u-button> -->
 
-			<image class="upImg" @click="chooseImage" src="../../static/upPhoto.png" mode="" :lazy-load="true"></image>
 			<image class="getMes" @click="getMes" src="../../static/nursebtn3.png" mode="" :lazy-load="true"></image>
 		</view>
 	</view>
@@ -232,6 +236,10 @@
 	export default {
 		data() {
 			return {
+				// 上传图片的服务器地址
+				action: 'https://www.xiaohulaile.com/xh/p/alipay/upload/put',
+				// 上传图片的图片列表
+				fileList: [],
 				orderID: "",
 				form0: '',
 				//出口处评估列表
@@ -296,53 +304,42 @@
 			}
 		},
 		methods: {
-			//动态上传图片
-			chooseImage() {
-				uni.chooseImage({
-					count: 5,
-					success: res => {
-						//上传时提示上传中吐司
-						uni.showLoading({
-							title: '上传图片中',
-						})
+			// uppic() {
+			// 	let that = this;
+			// 	let num = 5;
+			// 	that.$refs.uUpload.lists.map((item, i) => {
+			// 		if (num === that.$refs.uUpload.lists.length) {
+			// 			uni.showToast({
+			// 				title: '最多上传5张图片',
+			// 				icon: 'none'
+			// 			});
+			// 			return
+			// 		}
+			// 		if (i == that.$refs.uUpload.lists.length - 1) {
+			// 			if (item.file) {
+			// 				uni.uploadFile({
+			// 					url: that.action,
+			// 					filePath: item.file.path,
+			// 					name: 'file',
+			// 					header: {
+			// 						"Content-Type": "multipart/form-data"
+			// 					},
+			// 					success(res) {
+			// 						console.log('上传结果',res)
+			// 						let resp = JSON.parse(res.data);
+			// 						that.fileList.push(resp.data.url);
+			// 						//console.log(that.pictureList);
+			// 					}
+			// 				});
+			// 			}
+			// 		}
+			// 	});
 
-
-
-						//赋值图片链接到声明变量
-						this.pictures = res.tempFilePaths;
-						//判断是否赋值成功关闭上传中吐司
-						if (this.pictures == res.tempFilePaths) {
-							setTimeout(function() {
-								uni.hideLoading();
-							}, 2000);
-						}
-						//成功提示成功吐司
-						setTimeout(function() {
-							uni.showToast({
-								title: "上传成功",
-								duration: 2000
-							})
-						}, 2000);
-						//审查图片是否赋值
-						console.log('pictures',this.pictures)
-						// console.log(res);
-						// let filePath=res.tempFilePaths
-						// // callback方式，与promise方式二选一即可
-						// uniCloud.uploadFile({
-						// 	filePath: filePath,
-						// 	cloudPath: 'a.jpg',
-						// 	onUploadProgress: function(progressEvent) {
-						// 		console.log(progressEvent);
-						// 		var percentCompleted = Math.round(
-						// 			(progressEvent.loaded * 100) / progressEvent.total
-						// 		);
-						// 	},
-						// 	success() {},
-						// 	fail() {},
-						// 	complete() {}
-						// });
-					}
-				})
+			// },
+			// 上传图片至服务器
+			submitImg() {
+				console.log('正在上传图片至服务器')
+				this.$refs.uUpload.upload();
 
 			},
 			//提交
@@ -373,14 +370,7 @@
 					})
 					return
 				}
-				// //判断是否上传图片
-				// if (this.form1.servicePicaddress === '') {
-				// 	uni.showToast({
-				// 		title: '请上传图片',
-				// 		icon: 'none'
-				// 	})
-				// 	return
-				// }
+
 				uni.showLoading({
 					title: "提交中..."
 				})
@@ -412,7 +402,7 @@
 							uni.showToast({
 								title: "请勿重复提交！",
 								duration: 1000,
-								icon:"none"
+								icon: "none"
 							})
 							return
 						}
@@ -425,6 +415,8 @@
 			}
 		},
 		onLoad(option) {
+			const image = new Image()
+			console.log(image)
 			// decodeURIComponent 解密传过来的对象字符串
 			const item = JSON.parse(decodeURIComponent(option.item));
 			console.log(item)
@@ -433,7 +425,9 @@
 			let orderID = uni.getStorageSync("orderID")
 			this.orderID = orderID
 			console.log(orderID)
+
 		}
+
 	}
 </script>
 <style lang="less" scoped>
@@ -442,7 +436,7 @@
 		background: url(../../static/backImg.jpg) no-repeat;
 		background-size: 750rpx 5620rpx;
 		width: 750rpx;
-		height: 5620rpx;
+		height: 5950rpx; //5620
 
 		//设置每一个的列表下边框样式
 		.u-border-bottom:after {
@@ -507,10 +501,27 @@
 
 			//点击提交样式
 			.getMes {
+				position: absolute;
+				left: 50%;
+				transform: translateX(-50%);
+
 				width: 582rpx;
 				height: 216rpx;
-				margin-top: 40rpx;
-				margin-left: 35rpx;
+				bottom: -100rpx;
+			}
+
+			//上传图片样式
+			.uploadImg {
+				margin-top: 30rpx;
+				margin-left: 30rpx;
+			}
+
+			.uploadtit {
+				margin-left: 45rpx;
+				margin-top: 45rpx;
+				font-size: 34rpx;
+				color: #808080;
+				font-weight: 400;
 			}
 		}
 	}
