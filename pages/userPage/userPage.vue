@@ -4,16 +4,17 @@
 		<view class="userform">
 			<!-- 用户表单信息 -->
 			<u-form :model="form" ref="uForm" :border-bottom="false" :error-type="errorType">
-				<u-form-item label="联系电话:" class="uitem" label-width="150rpx" :border-bottom="false" prop="tel"
+				<u-form-item label="姓名:" class="uitem" label-width="200rpx" :border-bottom="false" prop="name"
+					:label-style="{'font-size':'30rpx','color': '#808080'}">
+					<u-input v-model="form.name" class="uinput" placeholder="请输入" :autoHeight="false" />
+				</u-form-item>
+				<u-form-item label="联系电话:" class="uitem" label-width="200rpx" :border-bottom="false" prop="tel"
 					:label-style="{'font-size':'30rpx','color': '#808080'}">
 					<u-input v-model="form.tel" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="11" />
 				</u-form-item>
 
-				<!-- <u-form-item label="来源医院:" class="uitem" label-width="150rpx" style="padding-right: 20rpx;"
-					:label-style="{'font-size':'30rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
-					<u-input v-model="form.hospital" type="select" @click="show = true" placeholder="请选择" />
-				</u-form-item> -->
-				<u-form-item label="是否本人:" class="uitem" label-width="150rpx" style="padding-right: 20rpx;"
+
+				<u-form-item label="是否本人操作:" class="uitem" label-width="200rpx" style="padding-right: 20rpx;"
 					prop="isSelf"
 					:label-style="{'font-size':'30rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
 					<u-radio-group v-model="form.isSelf" @change="radioGroupChange">
@@ -23,8 +24,23 @@
 						</u-radio>
 					</u-radio-group>
 				</u-form-item>
+				<u-form-item label="身份证号码:" class="uitem" label-width="200rpx" :border-bottom="false" prop="idcard"
+					:label-style="{'font-size':'30rpx','color': '#808080'}">
+					<u-input v-model="form.idcard" class="uinput" placeholder="请输入" :autoHeight="false"
+						maxlength="18" />
+				</u-form-item>
 
-				<u-form-item label="服务时间:" class="uitem" label-width="150rpx" :border-bottom="false"
+				<u-form-item label="服务地区:" class="uitem" label-width="200rpx" style="padding-right: 20rpx;"
+					:label-style="{'font-size':'30rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
+					<u-input v-model="form.region" type="select" @click="show = true" placeholder="请选择" />
+				</u-form-item>
+
+				<u-form-item label="详细地址:" class="uitem" label-width="200rpx" :border-bottom="false" prop="adress"
+					:label-style="{'font-size':'30rpx','color': '#808080'}">
+					<u-input v-model="form.adress" class="uinput" placeholder="请输入" :autoHeight="false" />
+				</u-form-item>
+
+				<u-form-item label="预约时间:" class="uitem" label-width="200rpx" :border-bottom="false"
 					:label-style="{'font-size':'30rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
 
 					<view class="uni-list select">
@@ -39,14 +55,22 @@
 						</view>
 					</view>
 				</u-form-item>
+				<!-- <u-form-item label="特殊医嘱:" class="uitem" label-width="auto" :border-bottom="false"
+					style="height: 136rpx;" 
+					:label-style="{'font-size':'30rpx','font-family':'Alibaba PuHuiTi','font-weight': 400,'color': '#808080'}">
+					<textarea v-model="form.content" placeholder="" />
+				</u-form-item> -->
+				<!-- 特殊医嘱 -->
+				<textarea v-model="form.content" class="doctoradvice" />
+
 			</u-form>
 			<!-- 预约按钮 -->
 			<image src="../../static/userbtn.png" mode="widthFix" class="bookBtn" @click="bookServe"></image>
 		</view>
 		<!-- 预约二维码 -->
-		<image :src="image" mode="widthFix" @click="preview(image)" class="qrCode"></image>
-		<!-- 医院选择下拉框 -->
-		<!-- <u-action-sheet :list="hospitalList" v-model="show" @click="actionSheetCallback"></u-action-sheet> -->
+		<!-- <image :src="image" mode="widthFix" @click="preview(image)" class="qrCode"></image> -->
+		<u-picker mode="multiSelector" v-model="show" @confirm="selectRegion" :range="regionList"
+			:default-selector='[0,0]'></u-picker>
 	</view>
 </template>
 
@@ -63,12 +87,17 @@
 		data() {
 
 			return {
-
+				show: false,
 				// 用户表单相关数据
 				form: {
+					name: "",
 					tel: "",
 					isSelf: "",
-					date: '请选择'
+					idcard: "",
+					region: "",
+					adress: "",
+					date: '请选择',
+					content: ""
 				},
 				image: "../../static/userQr.png", // 二维码
 				// 是否本人单选
@@ -100,10 +129,56 @@
 						required: true,
 						message: '请选择是否为本人',
 						trigger: ['change', 'blur']
+					}],
+					name: [{
+						required: true,
+						message: '请填写姓名',
+						trigger: ['change', 'blur']
+					}],
+					idcard: [{
+						required: true,
+						message: '请填写身份证号码',
+						trigger: ['change', 'blur']
+					}, {
+						pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/,
+						// 正则检验前先将值转为字符串
+						transform(value) {
+							return String(value);
+						},
+						message: '身份证号码格式错误',
+						trigger: ['change', 'blur']
+					}],
+					adress: [{
+						required: true,
+						message: '请填写详细地址',
+						trigger: ['change', 'blur']
 					}]
 				},
 				// 表单验证错误提示类型
-				errorType: ['toast']
+				errorType: ['toast'],
+				// 地区选择
+				regionList: [{
+						region1: '上海市'
+					},
+					{
+						region1: "黄浦区",
+						region2: "徐汇区",
+						region3: "长宁区",
+						region4: "静安区",
+						region5: "普陀区",
+						region6: "虹口区",
+						region7: "杨浦区",
+						region8: "闵行区",
+						region9: "宝山区",
+						region10: "嘉定区",
+						region11: "浦东新区",
+						region12: "金山区",
+						region13: "松江区",
+						region14: "青浦区",
+						region15: "奉贤区",
+						region16: "崇明区"
+					}
+				]
 			}
 		},
 		methods: {
@@ -128,6 +203,13 @@
 							})
 							return
 						}
+						if (this.form.region == "") {
+							uni.showToast({
+								title: '请选择服务地区',
+								icon: 'none'
+							})
+							return
+						}
 						console.log('验证通过');
 						// 发送请求
 						this.bookServeRequest()
@@ -141,12 +223,17 @@
 			// 发送预约服务请求
 			bookServeRequest() {
 				uni.showLoading({
-					title:"预约中..."
+					title: "预约中..."
 				})
 				let data = {
 					userPhone: this.form.tel,
 					oneself: this.form.isSelf,
-					userService: this.form.date
+					userService: this.form.date,
+					userName:this.form.name,
+					userRegion:"上海市/上海市/闵行区",
+					userAddress:this.form.adress,
+					userIDcard:this.form.idcard,
+					remark:this.form.content
 				}
 				console.log(data)
 				uni.request({
@@ -166,7 +253,7 @@
 						}
 						// 不能重复预约
 
-						if (res.data.data.usersLogin==false) {
+						if (res.data.data.usersLogin == false) {
 							uni.showToast({
 								title: "不能重复预约！",
 								icon: "none",
@@ -187,10 +274,6 @@
 						uni.hideLoading()
 					}
 				})
-			},
-			// 下拉选择框
-			actionSheetCallback(index) {
-				this.form.hospital = this.hospitalList[index].text;
 			},
 			// 选中某个单选框时，由radio时触发
 			radioChange(e) {
@@ -220,8 +303,20 @@
 				month = month > 9 ? month : '0' + month;
 				day = day > 9 ? day : '0' + day;
 				return `${year}-${month}-${day}`;
-			}
+			},
+			// 地区选择框
+			selectRegion(e) {
+				console.log(e)
+				let index1 = `region${e[0]+1}`
+				let index2 = `region${e[1]+1}`
+				// 使用属性名表达式获取到当前选择项
+				let regionfc = this.regionList[0][index1]
+				let regionsc = this.regionList[1][index2]
+				console.log(regionfc, regionsc)
 
+				//赋值给data
+				this.form.region = regionfc + regionsc
+			}
 
 		},
 		//表单验证规则
@@ -229,6 +324,7 @@
 		onReady() {
 			this.$refs.uForm.setRules(this.rules);
 		}
+
 	}
 </script>
 
@@ -236,18 +332,18 @@
 	.container {
 		position: relative;
 		width: 750rpx;
-		height: 3647rpx;
+		height: 3830rpx;
 		background: url(../../static/banner1.png) no-repeat;
 		background-size: 100%;
 
 		// 用户表单
 		.userform {
 			width: 653rpx;
-			height: 474rpx;
+			height: 1049rpx;
 			background: #FFFFFF;
 			border-radius: 30rpx;
 			position: absolute;
-			bottom: 549rpx;
+			bottom: 158rpx;
 			left: 50%;
 			transform: translateX(-50%);
 			// 输入框
@@ -285,6 +381,31 @@
 				height: 92rpx;
 				position: absolute;
 				bottom: -29rpx;
+			}
+
+			.doctoradvice {
+				position: relative;
+				width: 562rpx;
+				height: 136rpx;
+				border-radius: 12rpx;
+				border: 2rpx solid #009Aff;
+				margin-top: 31rpx;
+				padding: 20rpx;
+				font-size: 30rpx;
+				padding-left: 170rpx;
+			}
+
+			.doctoradvice::after {
+				position: absolute;
+				top: 20rpx;
+				left: 22rpx;
+				content: "备注:";
+				font-size: 30rpx;
+				font-weight: normal;
+				font-stretch: normal;
+				line-height: 42rpx;
+				letter-spacing: 1rpx;
+				color: #808080;
 			}
 
 		}

@@ -1,61 +1,89 @@
 <template>
-	<view>
-
-		<uni-file-picker v-model="imageValue" file-mediatype="image" :auto-upload="false" :imageStyles="imageStyles"
-			@progress="progress" @select="select" limit="5" ref="files">
-			<image src="../../static/upPhoto.png" mode="widthFix"></image>
-		</uni-file-picker>
-
-		<button @click="upload()">上传图片片</button>
-
-
-		<u-upload ref="uUpload" :action="action" :auto-upload="false"></u-upload>
-		<u-button @click="submit">提交</u-button>
+	<view class="container">
+		<view class="spsdan overflow">
+			<view class="fl mar-fr10">评价晒单</view>
+			<view class="fl pjbox">
+				<textarea class="textarea" type="text" value="" placeholder="分享心得，给万千想买的人一个参考" />
+				<view v-for="(item,index) in img" class="img">
+					<view class="iconfont iconcha2" v-if="img" @click="delet(index)"></view>
+					<image :src="item" mode=""></image>
+				</view>
+			</view>
+		</view>
+		<view class="chuantu overflow">
+			<image @click="upimg" style="width: 400rpx;height: 100rpx;" src="../../static/upPhoto.png" mode=""></image>
+			<span class="chuantu-text">共<span class="red">{{img.length}}</span>张</span>
+		</view>
 	</view>
+
 </template>
 
 <script>
 	export default {
 		data() {
 			return {
-				imageValue: [],
-				imageStyles: {
-					width: '458rpx',
-					height: '92rpx',
-					border: false
-				},
-				action: '',
-				fileList: []
+				img: '',
+				add_class: ''
 			}
 		},
 		methods: {
-			upload() {
-				this.$refs.files.chooseFiles()
-				console.log(this.$refs.files)
-			},
-			submit() {
-				this.$refs.uUpload.upload();
-			},
-			// 获取上传状态
-			select(e) {
-				console.log('选择文件：', e)
-				// 组装数据
-				const event = e.tempFiles
-				console.log(event)
-			},
-			// 获取上传进度
-			progress(e) {
-				console.log('上传进度：', e)
-			},
+			// 上传图片
+			upimg() {
+				uni.chooseImage({
+					success: (res) => {
+						console.log(res)
+						console.log(res.tempFilePaths)
+						console.log(res.tempFiles)
+						let formdata = new FormData();
+						formdata.append('file', res.tempFiles);
+						console.log(formdata)
+						uni.request({
+							url: "https://www.xiaohulaile.com/xh/p/alipay/upload/uploads",
+							method: "POST",
+							header:{
+								"content-type": "multipart/form-data;"
+							},
+							data: {
+								file:res.tempFiles,
+								id: 1
+							},
+							success(res) {
+								console.log(res)
+								if (this.img) {
+									this.img.push(...res.tempFilePaths)
+								} else {
+									this.img = res.tempFilePaths
+								}
+							}
+						})
+						// uni.uploadFile({
+						// 	url: "https://www.xiaohulaile.com/xh/p/alipay/upload/uploads",
+						// 	filePath: res.tempFilePaths[0],
+						// 	name: 'file', //后台接收字段名
+						// 	formData: this.formdata,
+						// 	header: {
+						// 		"Content-Type": "multipart/form-data",
+						// 		"token": this.token
+						// 	},
+						// 	success: (res) => {
+						// 		if (res.data.code == 200) {
+						// 			console.log('请求成功_______________', res)
+						// 		}
 
-			// 上传成功
-			success(e) {
-				console.log('上传成功')
+						// 	},
+						// 	fail: (err) => {
+						// 		console.log('请求失败_______________', err)
+						// 	}
+						// })
+					}
+				})
 			},
-
-			// 上传失败
-			fail(e) {
-				console.log('上传失败：', e)
+			// 删除照片
+			delet(index) {
+				this.img.splice(index, 1)
+			},
+			addclass(index) {
+				this.add_class = index;
 			}
 		}
 	}
