@@ -222,15 +222,26 @@
 			<view class="uploadtit">
 				请上传服务评价表：
 			</view>
+            
+            <u-upload
+                ref="uUpload"
+                :action="action"
+                :auto-upload="false"
+                max-count="9"
+                name="image"
+                :header="header"
+                size-type="['compressed']"
+                max-size="3145728"
+                :form-data="{id:3}"
+                >
+                
+            </u-upload>
+            
 			<!-- 提交和上传图片按钮 -->
-			<u-upload :file-list="fileList" ref="uUpload" :action="action" :header="header" :auto-upload="false"
-			     :max-size="5 * 1024 * 1024" max-count="5" :on-success="onSuccess"></u-upload>
-				 
-			<!-- <u-upload ref="uUpload" :action="action" :auto-upload="false" max-count="5" max-size="3145728" name="image"
-				:header="header" @on-success="onSuccess" width="177rpx" height="177rpx"></u-upload> -->
+			<!-- <u-upload ref="uUpload" :action="action" :auto-upload="false" max-count="5"  max-size="3145728" name="image" width="177rpx" height="177rpx"></u-upload> -->
 			<u-button @click="submitImg">提交</u-button>
 
-			<!-- <image class="getMes" @click="getMes" src="../../static/nursebtn3.png" mode="" :lazy-load="true"></image> -->
+			<image class="getMes" @click="getMes" src="../../static/nursebtn3.png" mode="" :lazy-load="true"></image>
 		</view>
 	</view>
 </template>
@@ -239,14 +250,9 @@
 	export default {
 		data() {
 			return {
-				// 允许上传的图片格式
-				// limitType: ['png', 'jpg', 'jpeg', 'webp', 'gif', 'JPG', 'PNG', 'JPEG', 'GIF', 'WEBP'],
-				// 上传图片的携带的请求头信息
-				header: {
-					id: 1
-				},
+            
 				// 上传图片的服务器地址
-				action: "https://www.xiaohulaile.com/xh/p/alipay/upload/uploads",
+				action: 'https://www.xiaohulaile.com/xh/p/alipay/upload/upload',
 				// 上传图片的图片列表
 				fileList: [],
 				orderID: "",
@@ -313,38 +319,50 @@
 			}
 		},
 		methods: {
-
-			onSuccess(data) {
-				console.log(data)
-			},
-			// beforeUpload(index, list) {
-			// 	console.log(list[index])
-			// 	uni.uploadFile({
-			// 		url: "https://www.xiaohulaile.com/xh/p/alipay/upload/uploads",
-			// 		filePath: list[index].url,
-			// 		name: "file",
-			// 		header: {
-			// 			"Content-Type": "multipart/form-data"
-			// 		},
-			// 		formData: { //其他的formdata参数
-			// 			id: 1
-			// 		},
-			// 		success: function(res) {
-			// 			console.log('尝试请求:', JSON.parse(res.data))
+			// uppic() {
+			// 	let that = this;
+			// 	let num = 5;
+			// 	that.$refs.uUpload.lists.map((item, i) => {
+			// 		if (num === that.$refs.uUpload.lists.length) {
+			// 			uni.showToast({
+			// 				title: '最多上传5张图片',
+			// 				icon: 'none'
+			// 			});
+			// 			return
 			// 		}
-			// 	})
+			// 		if (i == that.$refs.uUpload.lists.length - 1) {
+			// 			if (item.file) {
+			// 				uni.uploadFile({
+			// 					url: that.action,
+			// 					filePath: item.file.path,
+			// 					name: 'file',
+			// 					header: {
+			// 						"Content-Type": "multipart/form-data"
+			// 					},
+			// 					success(res) {
+			// 						console.log('上传结果',res)
+			// 						let resp = JSON.parse(res.data);
+			// 						that.fileList.push(resp.data.url);
+			// 						//console.log(that.pictureList);
+			// 					}
+			// 				});
+			// 			}
+			// 		}
+			// 	});
+
 			// },
 			// 上传图片至服务器
 			submitImg() {
-				console.log('正在上传图片至服务器')
-				this.$refs.uUpload.upload();
-				// let files = []
-				// // files = this.$refs.uUpload.lists.filter(val => {
-				// // 	return val.progress == 100
-				// // })
-				// // 如果您不需要进行太多的处理，直接如下即可
-				// files = this.$refs.uUpload.lists;
-				// console.log(files)
+				// console.log('正在上传图片至服务器')
+    //            let files = [];
+    //            // 通过filter，筛选出上传进度为100的文件(因为某些上传失败的文件，进度值不为100，这个是可选的操作)
+    //            files = this.$refs.uUpload.lists.filter(val => {
+    //                  return val.progress == 100;
+    //             })
+    //             // 如果您不需要进行太多的处理，直接如下即可
+    //             // files = this.$refs.uUpload.lists;
+    //             console.log(files)
+                this.$refs.uUpload.upload();
 			},
 			//提交
 			getMes() {
@@ -419,6 +437,8 @@
 			}
 		},
 		onLoad(option) {
+			const image = new Image()
+			console.log(image)
 			// decodeURIComponent 解密传过来的对象字符串
 			const item = JSON.parse(decodeURIComponent(option.item));
 			console.log(item)
