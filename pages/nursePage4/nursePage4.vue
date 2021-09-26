@@ -334,10 +334,10 @@
 
 			}
 		},
-		onLoad(option) {
-			console.log(option.id)
-			this.orderID = option.id
-			uni.setStorageSync("orderID",option.id)
+		onLoad() {
+			// console.log(option.id)
+			// this.orderID = option.id
+			// uni.setStorageSync("orderID",option.id)
 		}
 	}
 </script>

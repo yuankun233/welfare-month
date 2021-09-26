@@ -54,55 +54,53 @@
 						uni.showLoading({
 							title:"登陆中..."
 						})
-						// uni.request({
-						// 	url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/selectNurse",
-						// 	method: "POST",
-						// 	data: {
-						// 		nursePhone: this.form.nurseTel
-						// 	},
-						// 	success: (res) => {
-						// 		console.log(res)
-						// 		if (res.data.message == '失败') {
-						// 			uni.showToast({
-						// 				title: "手机号不存在",
-						// 				duration: 1000,
-						// 				icon: "none"
-						// 			})
-						// 			return
-						// 		}
-						// 		if (res.data.message == '成功') {
-						// 			let data = res.data.data.selectNurse
-						// 			data.push(this.form.nurseTel)
-						// 			let item = JSON.stringify(data)
-						// 			uni.showToast({
-						// 				title: "登录成功",
-						// 				icon: "success",
-						// 				duration: 1000
-						// 			})
-						// 			setTimeout(() => {
-						// 				uni.navigateTo({
-						// 					url: "../nursePage2/nursePage2?item=" +
-						// 						item
-						// 				})
-						// 			}, 1000)
+						uni.request({
+							url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/xhll/welfare/doctorLogin",
+							method: "POST",
+							data: {
+								doctorPhone: this.form.doctorTel
+							},
+							success: (res) => {
+								console.log(res)
+								if (res.data.message == '失败') {
+									uni.showToast({
+										title: "手机号不存在",
+										duration: 1000,
+										icon: "none"
+									})
+									return
+								}
+								// if (res.data.message == '成功') {
+								// 	let data = res.data.data.selectNurse
+								// 	data.push(this.form.nurseTel)
+								// 	let item = JSON.stringify(data)
+								// 	uni.showToast({
+								// 		title: "登录成功",
+								// 		icon: "success",
+								// 		duration: 1000
+								// 	})
+								// 	setTimeout(() => {
+								// 		uni.navigateTo({
+								// 			url: "../nursePage2/nursePage2?item=" +
+								// 				item
+								// 		})
+								// 	}, 1000)
 
-						// 			return
-						// 		}
-						// 	},
-						// 	fail() {
-						// 		uni.showToast({
-						// 			title: "登录失败，请稍后再试",
-						// 			icon: "success",
-						// 			duration: 1000
-						// 		})
-						// 	},
-						// 	complete() {
-						// 		uni.hideLoading()
-						// 	}
-						// })
-						uni.navigateTo({
-							url: "../doctorPage2/doctorPage2"
+								// 	return
+								// }
+							},
+							fail() {
+								uni.showToast({
+									title: "登录失败，请稍后再试",
+									icon: "none",
+									duration: 1000
+								})
+							},
+							complete() {
+								uni.hideLoading()
+							}
 						})
+						
 					} else {
 						console.log('验证失败');
 					}

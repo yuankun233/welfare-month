@@ -226,20 +226,24 @@
             <u-upload
                 ref="uUpload"
                 :action="action"
-                :auto-upload="false"
-                max-count="9"
+                :auto-upload="true"
+                max-count="5"
                 name="image"
-                :header="header"
-                size-type="['compressed']"
                 max-size="3145728"
-                :form-data="{id:3}"
+                :form-data="uppicdata"
+                @on-success="onSuccess"
+                @on-uploaded="onFullSuccess"
+                @on-list-change="piclistchange"
+               width="177rpx" 
+               height="177rpx"
+                class="uploadImg"
                 >
                 
             </u-upload>
             
 			<!-- 提交和上传图片按钮 -->
 			<!-- <u-upload ref="uUpload" :action="action" :auto-upload="false" max-count="5"  max-size="3145728" name="image" width="177rpx" height="177rpx"></u-upload> -->
-			<u-button @click="submitImg">提交</u-button>
+			<!-- <u-button @click="submitImg">提交</u-button> -->
 
 			<image class="getMes" @click="getMes" src="../../static/nursebtn3.png" mode="" :lazy-load="true"></image>
 		</view>
@@ -253,9 +257,15 @@
             
 				// 上传图片的服务器地址
 				action: 'https://www.xiaohulaile.com/xh/p/alipay/upload/upload',
-				// 上传图片的图片列表
-				fileList: [],
+                // 图片上传携带数据
+                uppicdata:{
+                    id:this.orderID
+                },
+                // 控制图片上传成功的flag
+                // picflag:"",
+                //订单id
 				orderID: "",
+                // 上个界面的评估表数据
 				form0: '',
 				//出口处评估列表
 				radioList: [{
@@ -312,60 +322,45 @@
 				},
 				form1: {
 					serviceCause: '', //原因
-					serviceCause1: '', //原因1
-					servicePicaddress: '' //	图片地址
+					serviceCause1: '' //原因1
 				},
-				pictures: []
+                // 图片地址，和表单数据一块提交到启业云
+                Pictures:[],
+                servicePicture:""
 			}
 		},
 		methods: {
-			// uppic() {
-			// 	let that = this;
-			// 	let num = 5;
-			// 	that.$refs.uUpload.lists.map((item, i) => {
-			// 		if (num === that.$refs.uUpload.lists.length) {
-			// 			uni.showToast({
-			// 				title: '最多上传5张图片',
-			// 				icon: 'none'
-			// 			});
-			// 			return
-			// 		}
-			// 		if (i == that.$refs.uUpload.lists.length - 1) {
-			// 			if (item.file) {
-			// 				uni.uploadFile({
-			// 					url: that.action,
-			// 					filePath: item.file.path,
-			// 					name: 'file',
-			// 					header: {
-			// 						"Content-Type": "multipart/form-data"
-			// 					},
-			// 					success(res) {
-			// 						console.log('上传结果',res)
-			// 						let resp = JSON.parse(res.data);
-			// 						that.fileList.push(resp.data.url);
-			// 						//console.log(that.pictureList);
-			// 					}
-			// 				});
-			// 			}
-			// 		}
-			// 	});
-
-			// },
+		
 			// 上传图片至服务器
 			submitImg() {
-				// console.log('正在上传图片至服务器')
-    //            let files = [];
-    //            // 通过filter，筛选出上传进度为100的文件(因为某些上传失败的文件，进度值不为100，这个是可选的操作)
-    //            files = this.$refs.uUpload.lists.filter(val => {
-    //                  return val.progress == 100;
-    //             })
-    //             // 如果您不需要进行太多的处理，直接如下即可
-    //             // files = this.$refs.uUpload.lists;
-    //             console.log(files)
-                this.$refs.uUpload.upload();
+
+                this.$refs.uUpload.upload();//上传图片
+               
 			},
+            // 上传成功服务器返回的地址
+            onSuccess(a,b,c,d){
+                console.log(a.result)
+                // 追加到data中
+                this.Pictures.push(a.result)
+                  // 处理上传的图片地址，拼接为字符串
+                this.servicePicture=this.servicePicture+a.result+","
+                console.log('拼接成功地址',this.servicePicture)
+            },
+           
+           //当图片增加或去除的时候，给一个变量代表所有图片是否都上传成功的标识，此时false就说明图片还在上传中，则不能提交表单
+           piclistchange(){
+               this.picflag=false
+           },
+           //当所有图片上传成功时，flag变为true,可以提交表单
+           onFullSuccess(){
+               this.picflag=true
+           },
 			//提交
 			getMes() {
+               
+               
+                // 处理图片返回的链接
+                // this.pictolist()
 				let flag = Object.values(this.form).every(function(item) {
 					return item != ''
 				})
@@ -392,20 +387,33 @@
 					})
 					return
 				}
-
+               
+                if(this.picflag==false){
+                    uni.showToast({
+                    	title: '图片还未上传完毕',
+                    	icon: 'none'
+                    })
+                    return
+                }
+                
 				uni.showLoading({
 					title: "提交中..."
 				})
 				//审查数据是否赋值成功
 				console.log(this.form, 'form表单')
 				console.log(this.form1, 'form表单')
-				let data = {
-					orderID: this.orderID,
-					...this.form0,
-					...this.form,
-					...this.form1
-				}
-				console.log('ajax发送数据', data)
+				
+                let data = {
+                	orderID: this.orderID,
+                    servicePicaddress:this.servicePicture,
+                	...this.form0,
+                	...this.form,
+                	...this.form1
+                  
+                }
+                console.log('ajax发送数据', data)
+                
+                
 				// 提交表单
 				uni.request({
 					url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/insertInfo",
@@ -418,6 +426,12 @@
 								title: "提交成功！",
 								duration: 1000
 							})
+                            setTimeout(()=>{
+                                uni.navigateTo({
+                                    url:"../nursePage2/nursePage2"
+                                })
+                            },1000)
+                        
 							return
 						}
 						if (res.data.data.serviceInfo == false) {
@@ -437,16 +451,24 @@
 			}
 		},
 		onLoad(option) {
-			const image = new Image()
-			console.log(image)
+            
 			// decodeURIComponent 解密传过来的对象字符串
 			const item = JSON.parse(decodeURIComponent(option.item));
 			console.log(item)
 			this.form0 = item
-
-			let orderID = uni.getStorageSync("orderID")
-			this.orderID = orderID
-			console.log(orderID)
+            
+            try{
+                //从本地储存中获取到订单id
+                let value = JSON.parse(uni.getStorageSync("order"))
+                let orderID = value[2].orderID
+                console.log(orderID)
+                // 把订单id存到data中和图片上传所需参数中
+                this.orderID = orderID
+                this.uppicdata.id = orderID
+            }catch(e){
+                console.log("订单id获取失败",e)
+            }
+		
 
 		}
 

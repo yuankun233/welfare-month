@@ -5,12 +5,18 @@
             <!-- 用户表单信息 -->
             <u-form :model="form" ref="uForm" :border-bottom="false" :error-type="errorType">
                 <u-form-item label="姓名:" class="uitem" label-width="200rpx" :border-bottom="false" prop="name" :label-style="{ 'font-size': '30rpx', color: '#808080' }">
-                    <u-input v-model="form.name" class="uinput" placeholder="请输入" :autoHeight="false" />
+                    <u-input v-model="form.name" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="5"/>
+                </u-form-item>
+                <u-form-item label="年龄:" class="uitem" label-width="200rpx" :border-bottom="false" prop="age" :label-style="{ 'font-size': '30rpx', color: '#808080' }">
+                    <u-input v-model="form.age" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="5" />
                 </u-form-item>
                 <u-form-item label="联系电话:" class="uitem" label-width="200rpx" :border-bottom="false" prop="tel" :label-style="{ 'font-size': '30rpx', color: '#808080' }">
                     <u-input v-model="form.tel" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="11" />
                 </u-form-item>
 
+                <u-form-item label="身份证号码:" class="uitem" label-width="200rpx" :border-bottom="false" prop="idcard" :label-style="{ 'font-size': '30rpx', color: '#808080' }">
+                    <u-input v-model="form.idcard" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="18" />
+                </u-form-item>
                 <u-form-item
                     label="是否本人操作:"
                     class="uitem"
@@ -22,9 +28,6 @@
                     <u-radio-group v-model="form.isSelf" @change="radioGroupChange">
                         <u-radio @change="radioChange" v-for="(item, index) in list" :key="index" :name="item.name" :disabled="item.disabled">{{ item.name }}</u-radio>
                     </u-radio-group>
-                </u-form-item>
-                <u-form-item label="身份证号码:" class="uitem" label-width="200rpx" :border-bottom="false" prop="idcard" :label-style="{ 'font-size': '30rpx', color: '#808080' }">
-                    <u-input v-model="form.idcard" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="18" />
                 </u-form-item>
 
                 <u-form-item
@@ -97,7 +100,8 @@ export default {
                 region: '',
                 adress: '',
                 date: '请选择',
-                content: ''
+                content: '',
+                age: ''
             },
             image: '../../static/userQr.png', // 二维码
             // 是否本人单选
@@ -161,6 +165,13 @@ export default {
                     {
                         required: true,
                         message: '请填写详细地址',
+                        trigger: ['change', 'blur']
+                    }
+                ],
+                age: [
+                    {
+                        required: true,
+                        message: '请填写年龄',
                         trigger: ['change', 'blur']
                     }
                 ]
@@ -246,22 +257,38 @@ export default {
                 // userRegion:"上海市 上海市 闵行区",
                 userAddress: this.form.adress,
                 userIDcard: this.form.idcard,
-                remark: this.form.content
+                remark: this.form.content,
+                userAge: this.form.age
             }
             console.log(data)
             uni.request({
                 url: 'https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/insertUsers',
                 method: 'POST',
                 data,
-                success(res) {
+                success: res => {
                     console.log(res)
                     // 预约成功
                     if (res.data.data.usersLogin) {
                         uni.showToast({
                             title: '预约成功！',
                             icon: 'success',
-                            duration: 2000
+                            duration: 1500
                         })
+                        setTimeout(()=>{
+                            //清空表单
+                            this.form = {
+                                name: '',
+                                tel: '',
+                                isSelf: '',
+                                idcard: '',
+                                region: '',
+                                adress: '',
+                                date: '请选择',
+                                content: '',
+                                age: ''
+                            }
+                        },1500)
+                        
                         return
                     }
                     // 不能重复预约
@@ -330,7 +357,7 @@ export default {
 
             //赋值给data
             //城市和区之间空格隔开，以发送请求匹配启业云地区字段
-            this.form.region = regionfc +"\xa0"+ regionsc+"\xa0"+region3rd
+            this.form.region = regionfc + '\xa0' + regionsc + '\xa0' + region3rd
             console.log(this.form.region)
         }
     },
@@ -353,11 +380,11 @@ export default {
     // 用户表单
     .userform {
         width: 653rpx;
-        height: 1049rpx;
+        height: 1149rpx;
         background: #ffffff;
         border-radius: 30rpx;
         position: absolute;
-        bottom: 158rpx;
+        bottom: 58rpx;
         left: 50%;
         transform: translateX(-50%);
         // 输入框
