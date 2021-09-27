@@ -264,8 +264,7 @@ export default {
                 userAddress: this.form.adress,
                 userIDcard: this.form.idcard,
                 remark: this.form.content,
-                userAge: this.form.age,
-                
+                userAge: this.form.age
             }
             console.log(data)
             uni.request({

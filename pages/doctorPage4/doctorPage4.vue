@@ -46,11 +46,13 @@
                 </view>
                 <view class="textitem">
                     <view class="left">备注：</view>
-                    <view class="right">{{ item.remark }}</view>
+                    <view class="right" style="white-space:normal; width:170px; overflow:auto;padding-left: unset;text-indent: 2em;" >{{ item.remark }}</view>
                 </view>
                 <view class="textitem">
                     <view class="left">医嘱：</view>
-                    <view class="right">{{ item.advice }}</view>
+                    
+                 
+                    <view class="right" style="white-space:normal; width:170px; overflow:auto;padding-left: unset;text-indent: 2em;" >{{ item.advice }}</view>
                 </view>
                 <u-button @click="addAdviceid(item.oid)" type="primary" class="addAdvice">添加医嘱</u-button>
             </view>
@@ -111,6 +113,7 @@ export default {
         // 添加医嘱
         addAdvice() {
             // if(this.advice="")
+            let that = this
             uni.request({
                 url: 'https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/doctorAdvice',
                 method: 'POST',
@@ -118,8 +121,21 @@ export default {
                     advice: this.advice,
                     id: this.oid
                 },
-                success(res) {
+                success: res => {
                     console.log('添加医嘱结果：', res)
+                    if (res.data.data.doctorAdvice) {
+                        uni.showToast({
+                            title: '医嘱添加成功',
+                            duration: 1000
+                        })
+                        // 清除文本域
+                        this.advice = ''
+                        setTimeout(() => {
+                            this.show = false                         
+                           // 重新获取推荐的客户列表
+                           this.getUserList()
+                        })
+                    }
                 }
             })
         },
@@ -222,7 +238,8 @@ export default {
 
             padding: 36rpx 35rpx 0 47rpx;
             width: 653rpx;
-            height: 740rpx;
+            height: auto;
+            padding-bottom: 20rpx;
             background-color: #ffffff;
             border-radius: 18rpx;
             .textitem:nth-of-type(1) {
