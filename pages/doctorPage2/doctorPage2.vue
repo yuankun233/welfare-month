@@ -4,12 +4,12 @@
         <view class="form">
             <view class="message1 message">
                 您好，
-                <span class="light">刘能</span>
+                <span class="light">{{doctor.doctorName}}</span>
                 医生
             </view>
             <view class="message2 message">
                 已推荐
-                <span class="light" style="vertical-align: bottom;">62</span>
+                <span class="light" style="vertical-align: bottom;">{{doctor.doctorTime}}</span>
                 人
             </view>
             <image src="../../static/doctorqrbtn.png" mode="widthFix" class="qrbtn" @click="toQrCode"></image>
@@ -23,20 +23,35 @@
 <script>
 export default {
     data() {
-        return {}
+        return {
+            // 医生的信息
+            doctor: ''
+        }
     },
     methods: {
         //前往二维码
-        toQrCode(){
+        toQrCode() {
             uni.navigateTo({
-                url:"../doctorPage3/doctorPage3"
+                url: '../doctorPage3/doctorPage3'
             })
         },
         // 前往用户列表
-        toUserList(){
+        toUserList() {
             uni.navigateTo({
-                url:"../doctorPage4/doctorPage4"
+                url: '../doctorPage4/doctorPage4'
             })
+        }
+    },
+    onLoad() {
+        try {
+            let value = uni.getStorageSync('doctor')
+           
+            if (value) {
+                console.log("本地医生信息",value)
+                this.doctor = JSON.parse(value)
+            }
+        } catch (e) {
+            console.log(e)
         }
     }
 }

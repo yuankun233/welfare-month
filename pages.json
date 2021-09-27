@@ -60,21 +60,7 @@
                 "navigationStyle": "custom"
             }
 
-        }, {
-            "path": "pages/uploadtest/uploadtest",
-            "style": {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-
-        }, {
-            "path": "pages/uploadtest1/uploadtest1",
-            "style": {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-
-        },
+        }, 
         {
             "path": "pages/userPage0/userPage0",
             "style": {

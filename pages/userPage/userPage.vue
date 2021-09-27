@@ -5,7 +5,7 @@
             <!-- 用户表单信息 -->
             <u-form :model="form" ref="uForm" :border-bottom="false" :error-type="errorType">
                 <u-form-item label="姓名:" class="uitem" label-width="200rpx" :border-bottom="false" prop="name" :label-style="{ 'font-size': '30rpx', color: '#808080' }">
-                    <u-input v-model="form.name" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="5"/>
+                    <u-input v-model="form.name" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="5" />
                 </u-form-item>
                 <u-form-item label="年龄:" class="uitem" label-width="200rpx" :border-bottom="false" prop="age" :label-style="{ 'font-size': '30rpx', color: '#808080' }">
                     <u-input v-model="form.age" class="uinput" placeholder="请输入" :autoHeight="false" maxlength="5" />
@@ -90,6 +90,9 @@ export default {
     },
     data() {
         return {
+            //推荐医生所携带的id
+            doctorid: '', //启业云表自带id
+            doctorid2: '', //自定义医生id
             show: false,
             // 用户表单相关数据
             form: {
@@ -248,7 +251,10 @@ export default {
             uni.showLoading({
                 title: '预约中...'
             })
+
             let data = {
+                 // 医生id
+                recommendDoctors: this.doctorid2,
                 userPhone: this.form.tel,
                 oneself: this.form.isSelf,
                 userService: this.form.date,
@@ -258,7 +264,8 @@ export default {
                 userAddress: this.form.adress,
                 userIDcard: this.form.idcard,
                 remark: this.form.content,
-                userAge: this.form.age
+                userAge: this.form.age,
+                
             }
             console.log(data)
             uni.request({
@@ -274,7 +281,22 @@ export default {
                             icon: 'success',
                             duration: 1500
                         })
-                        setTimeout(()=>{
+                        if (this.doctorid != undefined) {
+                            console.log('开始增加医生的推荐人数')
+                            //预约成功后，增加对应医生的推荐人数
+                            uni.request({
+                                url: 'https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/doctorRecom',
+                                method: 'POST',
+                                data: {
+                                    id: this.doctorid
+                                },
+                                success(res) {
+                                    console.log('增加医生推荐人数', res)
+                                }
+                            })
+                        }
+
+                        setTimeout(() => {
                             //清空表单
                             this.form = {
                                 name: '',
@@ -287,8 +309,8 @@ export default {
                                 content: '',
                                 age: ''
                             }
-                        },1500)
-                        
+                        }, 1500)
+
                         return
                     }
                     // 不能重复预约
@@ -365,6 +387,12 @@ export default {
     // 必须要在onReady生命周期，因为onLoad生命周期组件可能尚未创建完毕
     onReady() {
         this.$refs.uForm.setRules(this.rules)
+    },
+    onLoad(option) {
+        console.log('推荐医生id:', option.id)
+        console.log('推荐医生id2:', option.id2)
+        this.doctorid = option.id
+        this.doctorid2 = option.id2
     }
 }
 </script>

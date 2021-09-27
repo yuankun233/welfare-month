@@ -4,28 +4,39 @@
         <view class="form">
             <view class="message1 message">
                 您好，
-                <span class="light">刘能</span>
+                <span class="light">{{doctor.doctorName}}</span>
                 医生
             </view>
             <view class="message2 message">
                 已推荐
-                <span class="light" style="vertical-align: bottom;">62</span>
+                <span class="light" style="vertical-align: bottom;">{{doctor.doctorTime}}</span>
                 人
             </view>
-            
+
             <!-- 二维码 -->
             <view class="qrcode"></view>
         </view>
-        
     </view>
 </template>
 
 <script>
 export default {
     data() {
-        return {}
+        return {
+            doctor: ''
+        }
     },
-    methods: {}
+    methods: {},
+    onLoad() {
+        try {
+            let value = uni.getStorageSync('doctor')
+            if (value) {
+                this.doctor = JSON.parse(value)
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
 }
 </script>
 
@@ -36,8 +47,6 @@ export default {
     height: 1334rpx;
     background: url(../../static/doctorbanner2.png) no-repeat;
     background-size: 100%;
-
-   
 
     // 医生推荐信息
     .form {
@@ -54,7 +63,7 @@ export default {
             line-height: 24rpx;
             letter-spacing: 1rpx;
             line-height: auto;
-        
+
             .light {
                 color: #0177fe;
                 font-size: 52rpx;
