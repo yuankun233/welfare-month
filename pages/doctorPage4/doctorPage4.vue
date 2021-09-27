@@ -46,13 +46,12 @@
                 </view>
                 <view class="textitem">
                     <view class="left">备注：</view>
-                    <view class="right" style="white-space:normal; width:170px; overflow:auto;padding-left: unset;text-indent: 2em;" >{{ item.remark }}</view>
+                    <view class="right" style="white-space:normal; width:170px; overflow:auto;padding-left: unset;text-indent: 2em;">{{ item.remark }}</view>
                 </view>
                 <view class="textitem">
                     <view class="left">医嘱：</view>
-                    
-                 
-                    <view class="right" style="white-space:normal; width:170px; overflow:auto;padding-left: unset;text-indent: 2em;" >{{ item.advice }}</view>
+
+                    <view class="right" style="white-space:normal; width:170px; overflow:auto;padding-left: unset;text-indent: 2em;">{{ item.advice }}</view>
                 </view>
                 <u-button @click="addAdviceid(item.oid)" type="primary" class="addAdvice">添加医嘱</u-button>
             </view>
@@ -131,9 +130,9 @@ export default {
                         // 清除文本域
                         this.advice = ''
                         setTimeout(() => {
-                            this.show = false                         
-                           // 重新获取推荐的客户列表
-                           this.getUserList()
+                            this.show = false
+                            // 重新获取推荐的客户列表
+                            this.getUserList()
                         })
                     }
                 }
@@ -143,7 +142,7 @@ export default {
         searchOrder() {
             if (this.searchKey == '') {
                 uni.showToast({
-                    title: '请输入关键词后再查询！！',
+                    title: '请输入关键词后再查询',
                     icon: 'none'
                 })
                 return
@@ -157,8 +156,21 @@ export default {
                 url: 'https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/orderSearch',
                 method: 'POST',
                 data,
-                success(res) {
+                success: res => {
                     console.log('模糊查询结果：', res)
+                    // 查询成功
+                    if (res.data.success) {
+                        uni.showToast({
+                            title: '查询成功',
+                            icon: 'success',
+                            duration: 500
+                        })
+                        setTimeout(() => {
+                            this.userList = res.data.data.orderSearch
+                        }, 500)
+                        // console.log(res.data.data.orderSearch)
+                        // this.$set(this.userList,res.data.data.orderSearch[0])
+                    }
                 }
             })
         }
