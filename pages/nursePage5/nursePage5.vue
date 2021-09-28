@@ -254,7 +254,10 @@
 	export default {
 		data() {
 			return {
-            
+                // 订单数据
+                orderinfo:"",
+                // 启业云订单id
+                id:"",
 				// 上传图片的服务器地址
 				action: 'https://www.xiaohulaile.com/xh/p/alipay/upload/upload',
                 // 图片上传携带数据
@@ -396,60 +399,98 @@
                     return
                 }
                 
-				uni.showLoading({
-					title: "提交中..."
-				})
+				
 				//审查数据是否赋值成功
 				console.log(this.form, 'form表单')
 				console.log(this.form1, 'form表单')
 				
+             
+                // 提交表单完成服务
+                this.overServe()
+                
+				
+			},
+            overServe(){
+                uni.showLoading({
+                	title: "提交中..."
+                })
                 let data = {
                 	orderID: this.orderID,
                     servicePicaddress:this.servicePicture,
                 	...this.form0,
                 	...this.form,
                 	...this.form1
-                  
                 }
                 console.log('ajax发送数据', data)
-                
-                
-				// 提交表单
-				uni.request({
-					url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/insertInfo",
-					method: "POST",
-					data,
-					success: (res) => {
-						console.log(res)
-						if (res.data.data.serviceInfo == true) {
-							uni.showToast({
-								title: "提交成功！",
-								duration: 1000
-							})
-                            setTimeout(()=>{
-                                uni.navigateTo({
-                                    url:"../nursePage2/nursePage2"
-                                })
-                            },1000)
+                // 提交表单
+                uni.request({
+                	url: "https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/insertInfo",
+                	method: "POST",
+                	data,
+                	success: (res) => {
+                		console.log(res)
+                		if (res.data.data.serviceInfo == true) {
+                		
+                            // 增加护士的服务次数，并修改护士的服务状态为待结单
+                            uni.request({
+                                url:"https://www.qycloud.com.cn/bee/open-75661043697254584/xhll/welfare/completeService ",
+                                method:"POST",
+                                data:{
+                                    id:this.id,
+                                    nursePhone:this.orderinfo.nursePhone
+                                },
+                                success:res=> {
+                                    console.log(res)
+                                    if(res.data.data.completeService){
+                                        uni.showToast({
+                                        	title: "提交成功！",
+                                        	duration: 1000,
+                                        	icon: "none"
+                                        })
+                                        
+                                        setTimeout(()=>{
+                                            uni.navigateTo({
+                                                url:"../nursePage2/nursePage2"
+                                            })
+                                        },1000)
+                                        return
+                                    }
+                                    if(res.data.data.completeService==false){
+                                        uni.showToast({
+                                        	title: "提交失败！",
+                                        	duration: 1000,
+                                        	icon: "none"
+                                        })
+                                        return
+                                    }
+                                }
+                            })
+                           
                         
-							return
-						}
-						if (res.data.data.serviceInfo == false) {
-							uni.showToast({
-								title: "请勿重复提交！",
-								duration: 1000,
-								icon: "none"
-							})
-							return
-						}
-
-					},
-					complete() {
-						uni.hideLoading()
-					}
-				})
-			}
+                			return
+                		}
+                		if (res.data.data.serviceInfo == false) {
+                			uni.showToast({
+                				title: "提交失败！",
+                				duration: 1000,
+                				icon: "none"
+                			})
+                			return
+                		}
+                
+                	},
+                	complete() {
+                		uni.hideLoading()
+                	}
+                })
+            },
+            
+            
+            
+            
+            
 		},
+       
 		onLoad(option) {
             
 			// decodeURIComponent 解密传过来的对象字符串
@@ -460,11 +501,13 @@
             try{
                 //从本地储存中获取到订单id
                 let value = JSON.parse(uni.getStorageSync("order"))
+                this.orderinfo = value[2]
                 let orderID = value[2].orderID
                 console.log(orderID)
                 // 把订单id存到data中和图片上传所需参数中
                 this.orderID = orderID
                 this.uppicdata.id = orderID
+                this.id = value[2].id
             }catch(e){
                 console.log("订单id获取失败",e)
             }
